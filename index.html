@@ -974,6 +974,83 @@
 
 
     </script>
+
+
+
+    <script>
+        // Prevent right-click
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+            // alert('Right-click is disabled');
+            return false;
+        });
+
+        // Prevent keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+            if (e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'C')) {
+                e.preventDefault();
+                alert('Developer tools are disabled');
+                return false;
+            }
+
+            // Disable Ctrl+S and Ctrl+U
+            if ((e.ctrlKey && e.key === 's') || (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+                alert('This action is disabled');
+                return false;
+            }
+        });
+
+        // Disable text selection
+        document.addEventListener('selectstart', function (e) {
+            e.preventDefault();
+            alert('Text selection is disabled');
+            return false;
+        });
+
+        // Prevent developer tools opening
+        let devTools = false;
+        setInterval(function () {
+            const widthThreshold = window.outerWidth - window.innerWidth > 160;
+            const heightThreshold = window.outerHeight - window.innerHeight > 160;
+            const orientation = widthThreshold ? 'vertical' : 'horizontal';
+
+            if (!(heightThreshold && widthThreshold) &&
+                ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) ||
+                    widthThreshold || heightThreshold)) {
+                if (!devTools) {
+                    alert('Developer tools are disabled');
+                    window.location.reload();
+                }
+                devTools = true;
+            } else {
+                devTools = false;
+            }
+        }, 1000);
+
+        // Disable keyboard shortcuts for extensions
+        Object.defineProperty(document, 'keydown', {
+            get() {
+                return false;
+            }
+        });
+
+        // Disable debugging functions
+        Object.defineProperty(window, 'console', {
+            value: console,
+            writable: false,
+            configurable: false
+        });
+
+        ['log', 'error', 'warn', 'info', 'debug'].forEach(function (method) {
+            console[method] = function () { };
+        });
+
+    </script>
 </body>
 
 </html>
